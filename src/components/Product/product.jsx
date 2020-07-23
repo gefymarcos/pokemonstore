@@ -3,29 +3,30 @@ import Card from '@material-ui/core/Card';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import { Typography } from '@material-ui/core';
+import './product.css';
+import { connect, useDispatch } from 'react-redux';
+import { addToCart } from '../../actions/pokemon-actions';
+import formatCurrency from '../../utils/number';
 
 const getImage = (pokemon) => pokemon.sprites && pokemon.sprites.front_default;
 
-export default function Product({ item }) {
+function Product({ item }) {
   const [error, setError] = useState(null);
-  const [pokemon, setPokemon] = useState([]);
-
-  const addToCart = (pokemon) => {
-    return null;
-  };
+  const [pokemon, setPokemon] = useState(item.pokemon);
+  const [image, setImage] = useState(item.pokemon);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    fetch(item.pokemon.url)
+    fetch(pokemon.url)
       .then((res) => res.json())
       .then(
         (response) => {
-          setPokemon(response);
-        },
-        (err) => {
-          setError(err);
+          pokemon.image = response.sprites.front_default;
+          setImage(pokemon.image);
+          setPokemon(pokemon);
         },
       );
-  }, []);
+  });
 
   if (error) {
     return (
@@ -35,16 +36,33 @@ export default function Product({ item }) {
     );
   }
   return (
-    <Card style={{ margin: 10, padding: 10, minWidth: 200, height: 200, display: 'flex', flex: 1, flexDirection: 'column' }}>
-      <div style={{ display: 'flex', flex: 0.7, justifyContent: 'center' }}>
-        <img src={getImage(pokemon)} alt="texto" />
+    <Card className="product-container">
+      <div className="product-image">
+        <img src={image} alt={pokemon.name} />
       </div>
-      <Typography style={{ display: 'flex', flex: 0.1, fontSize: 12 }}>
-        Nome: {pokemon.name}
+      <Typography className="product-name">
+        {pokemon.name}
       </Typography>
-      <Typography style={{ display: 'flex', flex: 0.1, fontSize: 12 }}>Preço: R$ 50,00</Typography>
       <Divider />
-      <Button style={{ display: 'flex', flex: 0.1 }} onClick={() => addToCart(pokemon)}>Comprar</Button>
+      <Typography className="product-price">
+        {formatCurrency(pokemon.price)}
+      </Typography>
+      <Button
+        className="product-button"
+        onClick={() => dispatch(addToCart(pokemon))}
+      >
+        Comprar
+      </Button>
     </Card>
   );
 }
+
+function mapStateToProps(state) {
+  const { pokemonState } = state;
+  return {
+    pokemons: pokemonState.pokemons,
+    searchTerm: pokemonState.searchTerm,
+  };
+}
+
+export default React.memo(connect(mapStateToProps)(Product));

@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { connect, useDispatch } from 'react-redux';
 import Drawer from '@material-ui/core/Drawer';
+import { Link } from 'react-router-dom';
 import {
   List,
   ListItem,
@@ -8,58 +10,90 @@ import {
   Typography,
   Button,
 } from '@material-ui/core';
+import './cart.css';
+import formatCurrency from '../../utils/number';
+import { clearCart } from '../../actions/pokemon-actions';
 
-export default function Cart() {
-  const [state, setState] = React.useState({ isOpen: false });
+function Cart({ cart, themeColor, isOpenCart }) {
+  const [state, setState] = React.useState({ isOpen: false, total: 0 });
+  const dispatch = useDispatch();
 
-  const toggleDrawer = (open) => (event) => {
-    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
-      return;
-    }
+  const sumTotal = () => cart.reduce((total, pokemon) => total + pokemon.price, 0);
 
-    setState({ ...state, isOpen: open });
-  };
+  useEffect(() => {
+    setState({
+      isOpen: true,
+      total: sumTotal(),
+    });
+  }, [cart]);
+
+  useEffect(() => {
+    setState({ isOpen: true });
+  }, [isOpenCart]);
+
+  const toggleDrawer = (open) => () => setState({ ...state, isOpen: open });
+
+  const isOpen = () => cart.length > 0 && state.isOpen;
 
   const list = () => (
     <div
       role="presentation"
-      onClick={toggleDrawer(false)}
-      onKeyDown={toggleDrawer(false)}
-      style={{ width: 250, height: '100vh' }}
+      className="cart-container"
     >
-      <Typography style={{ fontSize: 18, padding: 20, minHeight: 30 }}>
+      <Typography className="cart-title">
         Carrinho
       </Typography>
       <Divider />
-      <List>
-        {['Pikachu'].map((text) => (
-          <ListItem key={text}>
-            <ListItemText primary={text} />
-            <ListItemText secondary="R$15,00" />
+      <List className="cart-list-items">
+        {cart.map((pokemon, index) => (
+          <ListItem key={index}>
+            <ListItemText primary={pokemon.name} />
+            <ListItemText className="price" secondary={formatCurrency(pokemon.price)} />
           </ListItem>
         ))}
       </List>
       <Divider />
-      <div style={{ position: 'fixed', bottom: 0 }}>
-        <Typography style={{ minHeight: 30 }}>
-          Total: R$15,00
-        </Typography>
-        <Button style={{ minHeight: 30 }}>
-          Finalizar
+      <div className="cart-total-section">
+        <div className="cart-total">
+          <Typography className="cart-total-label">
+            Total:
+          </Typography>
+          <Typography className="cart-total-price">
+            {formatCurrency(state.total)}
+          </Typography>
+        </div>
+        <Divider />
+        <Button
+          variant="contained"
+          className="cart-total-button"
+          style={{ backgroundColor: themeColor }}
+          onClick={() => dispatch(clearCart())}
+        >
+          <Link to="/thanks" className="cart-total-button-label">Finalizar</Link>
         </Button>
       </div>
     </div>
   );
 
   return (
-    <div>
+    <>
       <Drawer
         anchor="right"
-        open={state.isOpen}
+        open={isOpen()}
         onClose={toggleDrawer(false)}
       >
         {list()}
       </Drawer>
-    </div>
+    </>
   );
 }
+
+function mapStateToProps(state) {
+  const { pokemonState } = state;
+  return {
+    cart: [...pokemonState.cart],
+    isOpenCart: pokemonState.isOpenCart,
+  };
+}
+
+export default React.memo(connect(mapStateToProps)(Cart));

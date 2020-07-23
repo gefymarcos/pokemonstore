@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import 'fontsource-roboto';
 import { Button, Typography } from '@material-ui/core';
+import './App.css';
 import PokemonStore from './components/PokemonStore/pokemonStore';
 
 const dragon = require('./assets/dragon.png');
@@ -28,41 +29,30 @@ export default function App() {
     default:
       return (
         <div>
-          <div style={{
-            width: '100vw',
-            height: '100vh',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexDirection: 'column',
-          }}
-          >
-            <Typography style={{ marginBottom: 15 }}>
-              Escolha o tipo de pokemon que deseja comprar
-            </Typography>
-            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
-              <Button style={{ display: 'inline', backgroundColor: '#DAA520' }} onClick={() => setStoreType('dragon')}>
+          <div className="app-container">
+            <div className="app-options">
+              <Button className="app-button" style={{ backgroundColor: '#DAA520' }} onClick={() => setStoreType('dragon')}>
                 <img src={dragon} alt="dragão" />
                 <Typography>
-                  Dragão
+                  Pokemon Dragão
                 </Typography>
               </Button>
-              <Button style={{ display: 'inline', backgroundColor: '#D4F1F9' }} onClick={() => setStoreType('water')}>
+              <Button className="app-button" style={{ backgroundColor: '#D4F1F9' }} onClick={() => setStoreType('water')}>
                 <img src={water} alt="água" />
                 <Typography>
-                  Água
+                  Pokemon Água
                 </Typography>
               </Button>
-              <Button style={{ display: 'inline', backgroundColor: '#E25822' }} onClick={() => setStoreType('fire')}>
+              <Button className="app-button" style={{ backgroundColor: '#E25822' }} onClick={() => setStoreType('fire')}>
                 <img src={fire} alt="fogo" />
                 <Typography>
-                  Fogo
+                  Pokemon Fogo
                 </Typography>
               </Button>
-              <Button style={{ display: 'inline', backgroundColor: '#DDDD33' }} onClick={() => setStoreType('eletric')}>
+              <Button className="app-button" style={{ backgroundColor: '#DDDD33' }} onClick={() => setStoreType('eletric')}>
                 <img src={eletric} alt="elétrico" />
                 <Typography>
-                  Elétrico
+                  Pokemon Elétrico
                 </Typography>
               </Button>
             </div>

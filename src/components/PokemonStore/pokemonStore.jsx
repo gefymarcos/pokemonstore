@@ -1,24 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import 'fontsource-roboto';
+import { useDispatch, connect } from 'react-redux';
+import './pokemonStore.css';
 import Toolbar from '../Toolbar/toolbar';
 import Product from '../Product/product';
 import Cart from '../Cart/cart';
+import { setPokemons } from '../../actions/pokemon-actions';
 
-const pokemonURL = 'https://pokeapi.co/api/v2/pokemon/?limit=100&offset=0';
 const typeURL = 'https://pokeapi.co/api/v2/type';
 
-function PokemonStore({ type, themeColor, icon }) {
+function PokemonStore({
+  pokemons,
+  type,
+  themeColor,
+  icon,
+  searchTerm,
+}) {
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [items, setItems] = useState([]);
+  const [filtered, setFiltered] = useState([]);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    fetch(`${typeURL}/${type}`)
+    fetch(`${typeURL}/${type}?limit=50&offset=0`)
       .then((res) => res.json())
       .then(
         (response) => {
           setIsLoaded(true);
-          setItems(response.pokemon);
+          dispatch(setPokemons(response.pokemon));
         },
         (err) => {
           setIsLoaded(true);
@@ -26,6 +35,22 @@ function PokemonStore({ type, themeColor, icon }) {
         },
       );
   }, []);
+
+  const filterByTerm = ({ pokemon }) => {
+    return pokemon.name.includes(searchTerm);
+  };
+
+  const showPokemons = (pokemonsToShow) => pokemonsToShow && pokemonsToShow.map((item, index) => {
+    item.pokemon.price = (item.pokemon.name.length * 12.7);
+    return (
+      <Product item={item} key={index} />
+    );
+  });
+
+  useEffect(() => {
+    const filtrada = pokemons.length > 1 && pokemons.filter(filterByTerm);
+    setFiltered(filtrada);
+  }, [searchTerm]);
 
   if (error) {
     return (
@@ -38,15 +63,21 @@ function PokemonStore({ type, themeColor, icon }) {
   }
   return (
     <div className="App">
-      <Toolbar themeColor={themeColor} icon={icon} />
-      <div style={{ display: 'flex', flex: 1, flexWrap: 'wrap' }}>
-        {items && items.map((item, index) => (
-          <Product item={item} key={index} />
-        ))}
-        <Cart />
+      <Toolbar themeColor={themeColor} icon={icon} type={type} />
+      <div className="pokemon-store-container">
+        { filtered ? showPokemons(filtered) : showPokemons(pokemons) }
+        <Cart themeColor={themeColor} />
       </div>
     </div>
   );
 }
 
-export default PokemonStore;
+function mapStateToProps(state) {
+  const { pokemonState } = state;
+  return {
+    pokemons: pokemonState.pokemons,
+    searchTerm: pokemonState.searchTerm,
+  };
+}
+
+export default React.memo(connect(mapStateToProps)(PokemonStore));

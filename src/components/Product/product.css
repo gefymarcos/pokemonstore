@@ -1,0 +1,28 @@
+.product-container {
+  margin: 10px;
+  padding: 10px;
+  min-width: 200px;
+  height: 200px;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+.product-image {
+  display: flex;
+  flex: 0.7;
+  justify-content: center;
+}
+.product-name {
+  display: flex;
+  flex: 0.1;
+  font-size: 16px;
+}
+.product-price {
+  display: flex;
+  flex: 0.1;
+  font-size: 12px;
+}
+.product-button {
+  display: flex;
+  flex: 0.1;
+}

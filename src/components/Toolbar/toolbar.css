@@ -1,0 +1,29 @@
+.toolbar-container {
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+}
+.toolbar-title {
+  color: #FAFAFA;
+  display: flex;
+  flex: 0.2;
+}
+.toolbar-icon {
+  width: 32px;
+  height: 32px;
+}
+.toolbar-search {
+  display: flex;
+  flex: 0.6;
+  background-color: #FAFAFA;
+  border-color: #FAFAFA;
+  border-radius: 10px;
+}
+.toolbar-search-input {
+  margin: 5px 15px;
+  width: 100%;
+}
+.toolbar-cart-icon {
+  display: flex;
+  flex: 0.2;
+}
